@@ -26,16 +26,16 @@ export const getAccessToken = async () => {
       ),
       ""
     )) as WebBrowserRedirectResult;
-    console.log(result);
+    // console.log(result);
 
     const regex = /access_token=([A-Za-z0-9]*)\&/;
     const params = result.url.match(regex);
-    console.log(params);
+    // console.log(params);
     const accessToken = params?.[1] ?? "";
 
     return accessToken;
   } catch (error) {
     console.log("FAILED TO RETRIEVE ACCESS TOKEN!!!");
-    console.log(error);
+    // console.log(error);
   }
 };

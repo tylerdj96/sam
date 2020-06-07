@@ -26,6 +26,6 @@ export const getRealms = async (
     );
     return realms.data;
   } catch (error) {
-    console.error(error);
+    // console.error(error);
   }
 };

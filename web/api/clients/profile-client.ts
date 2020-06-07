@@ -4,6 +4,7 @@ import {
   CharacterRender,
   Character,
 } from "./interfaces/characters";
+import { PvpBracketStatistics } from "./interfaces/pvp";
 
 const PROFILE_NAMESPACE = "profile-us";
 // const REGION = "us";
@@ -30,7 +31,7 @@ export const getCharacterList = async (
     );
     return characters.data;
   } catch (error) {
-    console.error(error);
+    // console.error(error);
   }
 };
 
@@ -57,6 +58,34 @@ export const getCharacterRender = async (
   try {
     const render = await axios.get<CharacterRender>(
       `https://us.api.blizzard.com/profile/wow/character/${realmSlug}/${characterName.toLowerCase()}/character-media`,
+      {
+        params: {
+          ...basicParams,
+          access_token: accessToken,
+        },
+      }
+    );
+    return render.data;
+  } catch (error) {
+    console.error(error);
+    return;
+  }
+};
+
+export enum ArenaBrackets {
+  twos = "2v2",
+  threes = "3v3",
+}
+
+export const getPvpBracketStats = async (
+  accessToken: string,
+  realmSlug: string,
+  characterName: string,
+  bracket: ArenaBrackets
+): Promise<PvpBracketStatistics | undefined> => {
+  try {
+    const render = await axios.get<PvpBracketStatistics>(
+      `https://us.api.blizzard.com/profile/wow/character/${realmSlug}/${characterName.toLowerCase()}/pvp-bracket/${bracket}`,
       {
         params: {
           ...basicParams,

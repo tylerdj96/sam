@@ -21,6 +21,7 @@ export interface CharacterOption {
 }
 
 //fix-me
+//this is backwards
 const sortChars = (a: CharacterOption, b: CharacterOption) => {
   if (a.char.level < b.char.level) return 1;
   else if (a.char.level > b.char.level) return -1;
@@ -95,7 +96,8 @@ export const CharacterList = () => {
             // rounded: true,
             source: { uri: opt.render?.avatar_url ?? opt.fallback },
           }}
-          onPress={() => navigator.navigate("Main", { opt })}
+          // onPress={() => navigator.navigate("Main", { opt })}
+          onPress={() => navigator.navigate("Character", { opt })}
           chevron
           bottomDivider
           // style={{

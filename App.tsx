@@ -6,6 +6,7 @@ import { BlizzApiProvider } from "./web/context/useBlizzToken";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { MainCharRender } from "./web/modules/character/mainCharRender";
+import { CharNavigator } from "./web/modules/character";
 
 const { Navigator, Screen } = createStackNavigator();
 
@@ -16,7 +17,12 @@ export default function App() {
         <Navigator initialRouteName="Character List">
           {/* <Screen name="Home" component={Home} /> */}
           <Screen name="Character List" component={CharacterList} />
-          <Screen name="Main" component={MainCharRender} />
+          {/* <Screen name="Main" component={MainCharRender} /> */}
+          <Screen
+            // options={{ headerShown: false }}
+            name="Character"
+            component={CharNavigator}
+          />
         </Navigator>
       </NavigationContainer>
     </BlizzApiProvider>
