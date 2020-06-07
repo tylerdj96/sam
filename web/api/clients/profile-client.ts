@@ -3,6 +3,8 @@ import {
   CharacterList,
   CharacterRender,
   Character,
+  CharacterAppearance,
+  CharacterEquipment,
 } from "./interfaces/characters";
 import { PvpBracketStatistics } from "./interfaces/pvp";
 
@@ -94,6 +96,50 @@ export const getPvpBracketStats = async (
       }
     );
     return render.data;
+  } catch (error) {
+    console.error(error);
+    return;
+  }
+};
+
+export const getCharacterAppearance = async (
+  accessToken: string,
+  realmSlug: string,
+  characterName: string
+): Promise<CharacterAppearance | undefined> => {
+  try {
+    const appearance = await axios.get<CharacterAppearance>(
+      `https://us.api.blizzard.com/profile/wow/character/${realmSlug}/${characterName.toLowerCase()}/appearance`,
+      {
+        params: {
+          ...basicParams,
+          access_token: accessToken,
+        },
+      }
+    );
+    return appearance.data;
+  } catch (error) {
+    console.error(error);
+    return;
+  }
+};
+
+export const getCharacterEquipment = async (
+  accessToken: string,
+  realmSlug: string,
+  characterName: string
+): Promise<CharacterEquipment | undefined> => {
+  try {
+    const equipment = await axios.get<CharacterEquipment>(
+      `https://us.api.blizzard.com/profile/wow/character/${realmSlug}/${characterName.toLowerCase()}/equipment`,
+      {
+        params: {
+          ...basicParams,
+          access_token: accessToken,
+        },
+      }
+    );
+    return equipment.data;
   } catch (error) {
     console.error(error);
     return;

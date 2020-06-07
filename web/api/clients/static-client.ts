@@ -1,12 +1,13 @@
 import axios, { AxiosResponse } from "axios";
 import { RealmList } from "./interfaces/realms";
+import { ItemMedia } from "./interfaces/items";
 
-const DYNAMIC_NAMESPACE = "dynamic-us";
+const STATIC_NAMESPACE = "static-us";
 // const REGION = "us";
 const LOCALE = "en_US";
 
 const basicParams = {
-  namespace: DYNAMIC_NAMESPACE,
+  namespace: STATIC_NAMESPACE,
   // REGION,
   locale: LOCALE,
 };
@@ -25,6 +26,26 @@ export const getRealms = async (
       }
     );
     return realms.data;
+  } catch (error) {
+    // console.error(error);
+  }
+};
+
+export const getItemMedia = async (
+  accessToken: string,
+  itemId: number
+): Promise<ItemMedia | undefined> => {
+  try {
+    const media = await axios.get<ItemMedia>(
+      `https://us.api.blizzard.com/data/wow/media/item/${itemId.toString()}`,
+      {
+        params: {
+          ...basicParams,
+          access_token: accessToken,
+        },
+      }
+    );
+    return media.data;
   } catch (error) {
     // console.error(error);
   }

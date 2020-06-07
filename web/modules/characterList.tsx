@@ -24,10 +24,10 @@ export interface CharacterOption {
 //this is backwards
 const sortChars = (a: CharacterOption, b: CharacterOption) => {
   if (a.char.level < b.char.level) return 1;
-  else if (a.char.level > b.char.level) return -1;
+  if (a.char.level > b.char.level) return -1;
   else {
-    if (a.char.name < b.char.name) return 1;
-    else if (a.char.name < b.char.name) return -1;
+    if (a.char.name < b.char.name) return -1;
+    if (a.char.name > b.char.name) return 1;
     else return 0;
   }
 };
