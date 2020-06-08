@@ -1,3 +1,5 @@
+import { ItemMedia } from "./items";
+
 export interface Self {
   href: string;
 }
@@ -302,29 +304,79 @@ export interface Appearance {
 //   OffHand = "OFF_HAND",
 // }
 //this is custom generated
-export enum CustomEquipmentSlotOrder {
-  "HEAD" = 0,
-  "NECK" = 1,
-  "SHOULDER" = 2,
-  "BACK" = 3,
-  "CHEST" = 4,
-  "SHIRT" = 5,
-  "TABARD" = 6,
-  "WRIST" = 7,
-  "GLOVES" = 8,
-  "BELT" = 9,
-  "LEGS" = 10,
-  "FEET" = 11,
-  "FINGER_1" = 12,
-  "FINGER_2" = 13,
-  "TRINKET_1" = 14,
-  "TRINKET_2" = 15,
-  "MAIN_HAND" = 16,
-  "OFF_HAND" = 17,
+// export enum CustomEquipmentSlotOrder {
+//   "HEAD" = 0,
+//   "NECK" = 1,
+//   "SHOULDER" = 2,
+//   "BACK" = 3,
+//   "CHEST" = 4,
+//   "SHIRT" = 5,
+//   "TABARD" = 6,
+//   "WRIST" = 7,
+//   "GLOVES" = 8,
+//   "BELT" = 9,
+//   "LEGS" = 10,
+//   "FEET" = 11,
+//   "FINGER_1" = 12,
+//   "FINGER_2" = 13,
+//   "TRINKET_1" = 14,
+//   "TRINKET_2" = 15,
+//   "MAIN_HAND" = 16,
+//   "OFF_HAND" = 17,
+// }
+
+// export enum CustomEquipmentSlotOrder {
+//   "HEAD",
+//   "NECK",
+//   "SHOULDER",
+//   "BACK",
+//   "CHEST",
+//   "SHIRT",
+//   "TABARD",
+//   "WRIST",
+//   "HANDS",
+//   "WAIST",
+//   "LEGS",
+//   "FEET",
+//   "FINGER_1",
+//   "FINGER_2",
+//   "TRINKET_1",
+//   "TRINKET_2",
+//   "MAIN_HAND",
+//   "OFF_HAND",
+// }
+
+export interface EquipmentDictionary {
+  [key: string]: {
+    order: number;
+    item: EquippedItem | undefined;
+    link: ItemMedia | undefined;
+  };
 }
 
+export const customEquipmentSlotOrder: EquipmentDictionary = {
+  HEAD: { order: 0, item: undefined, link: undefined },
+  NECK: { order: 1, item: undefined, link: undefined },
+  SHOULDER: { order: 2, item: undefined, link: undefined },
+  BACK: { order: 3, item: undefined, link: undefined },
+  CHEST: { order: 4, item: undefined, link: undefined },
+  SHIRT: { order: 5, item: undefined, link: undefined },
+  TABARD: { order: 6, item: undefined, link: undefined },
+  WRIST: { order: 7, item: undefined, link: undefined },
+  HANDS: { order: 8, item: undefined, link: undefined },
+  WAIST: { order: 9, item: undefined, link: undefined },
+  LEGS: { order: 10, item: undefined, link: undefined },
+  FEET: { order: 11, item: undefined, link: undefined },
+  FINGER_1: { order: 12, item: undefined, link: undefined },
+  FINGER_2: { order: 13, item: undefined, link: undefined },
+  TRINKET_1: { order: 14, item: undefined, link: undefined },
+  TRINKET_2: { order: 15, item: undefined, link: undefined },
+  MAIN_HAND: { order: 16, item: undefined, link: undefined },
+  OFF_HAND: { order: 17, item: undefined, link: undefined },
+};
+
 export interface Slot {
-  type: CustomEquipmentSlotOrder;
+  type: string;
   name: string;
 }
 

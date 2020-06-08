@@ -6,7 +6,8 @@ import {
   CharacterAppearance,
   CharacterEquipment,
   EquippedItem,
-  CustomEquipmentSlotOrder,
+  customEquipmentSlotOrder,
+  EquipmentDictionary,
 } from "../../api/clients/interfaces/characters";
 import {
   getCharacterAppearance,
@@ -18,16 +19,17 @@ import {
 import { getItemMedia } from "../../api/clients/static-client";
 import { ItemMedia } from "../../api/clients/interfaces/items";
 import { CharacterContext } from "./characterProvider";
+import { Dictionary, cloneDeep } from "lodash";
 
 const equipmentSorter = (a: EquippedItem, b: EquippedItem) => {
   if (
-    CustomEquipmentSlotOrder[a.slot.type] <
-    CustomEquipmentSlotOrder[b.slot.type]
+    customEquipmentSlotOrder[a.slot.type].order <
+    customEquipmentSlotOrder[b.slot.type].order
   )
     return -1;
   if (
-    CustomEquipmentSlotOrder[a.slot.type] >
-    CustomEquipmentSlotOrder[b.slot.type]
+    customEquipmentSlotOrder[a.slot.type].order >
+    customEquipmentSlotOrder[b.slot.type].order
   )
     return 1;
   return 0;
@@ -39,10 +41,9 @@ export const MainCharRender = () => {
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [charAppearance, setCharAppearance] = useState<CharacterAppearance>();
-  const [charEquipment, setCharEquipment] = useState<CharacterEquipment>();
-  const [equipmentMediaLinks, setEquipmentMediaLinks] = useState<
-    (ItemMedia | undefined)[]
-  >();
+  const [charEquipment, setCharEquipment] = useState<EquipmentDictionary>(
+    customEquipmentSlotOrder
+  );
 
   useEffect(() => {
     const loadCharacterData = async () => {
@@ -59,8 +60,30 @@ export const MainCharRender = () => {
           char.name
         );
         const [appearance, equipment] = await Promise.all([p1, p2]);
+        let equipmentDict = { ...customEquipmentSlotOrder };
+
+        // //need to add items if they are defined to preset dictionary
+        // // since blizzard returns equipment out of order
+        // // and only if the equipment piece exists
+
+        equipment?.equipped_items.forEach((item) => {
+          const key = item.slot.type;
+          equipmentDict[key] = { ...equipmentDict[key], item };
+        });
+
+        //make an api call for each link
+        const promises = Object.values(equipmentDict).map((obj) => {
+          return getItemMedia(accessToken, obj.item?.media.id);
+        });
+        //await the promise for each item query
+        const links = await Promise.all(promises);
+        links.forEach((link, index) => {
+          const key = Object.keys(charEquipment)[index];
+          equipmentDict[key] = { ...equipmentDict[key], link };
+        });
+        setCharEquipment(equipmentDict);
+
         setCharAppearance(appearance);
-        setCharEquipment(equipment);
       }
       setIsLoading(false);
     };
@@ -68,23 +91,7 @@ export const MainCharRender = () => {
     loadCharacterData();
   }, [accessToken]);
 
-  useEffect(() => {
-    const loadItemMedia = async () => {
-      setIsLoading(true);
-      if (accessToken && charEquipment) {
-        const promises = charEquipment.equipped_items.map((item) => {
-          return getItemMedia(accessToken, item.media.id);
-        });
-        const links = await Promise.all(promises);
-        setEquipmentMediaLinks(links);
-      }
-      setIsLoading(false);
-    };
-    loadItemMedia();
-  }, [accessToken, charEquipment]);
-
-  if (loading || isLoading || !equipmentMediaLinks) {
-    console.log({ loading, isLoading });
+  if (loading || isLoading) {
     return (
       <View>
         <ActivityIndicator size="large" color="#0000ff" />
@@ -95,20 +102,36 @@ export const MainCharRender = () => {
   return (
     <View style={{ position: "absolute", width: "100%", height: "100%" }}>
       <ItemList position="left">
-        {equipmentMediaLinks.slice(0, 8).map((link, index) => {
-          return <Item key={index} source={{ uri: link?.assets?.[0].value }} />;
-        })}
+        {Object.values(charEquipment)
+          .slice(0, 8)
+          .map((item, index) => {
+            return (
+              <Item
+                key={index}
+                source={{ uri: item?.link?.assets?.[0].value }}
+              />
+            );
+          })}
       </ItemList>
       <ItemList position="right">
-        {equipmentMediaLinks.slice(8, 16).map((link, index) => {
-          return <Item key={index} source={{ uri: link?.assets?.[0].value }} />;
-        })}
+        {Object.values(charEquipment)
+          .slice(8, 16)
+          .map((item, index) => {
+            return (
+              <Item
+                key={index}
+                source={{ uri: item?.link?.assets?.[0].value }}
+              />
+            );
+          })}
       </ItemList>
       <WeaponAndShield>
-        {equipmentMediaLinks
-          .slice(16, equipmentMediaLinks.length - 1)
-          .map((link, index) => {
-            return <WS key={index} source={{ uri: link?.assets?.[0].value }} />;
+        {Object.values(charEquipment)
+          .slice(16, Object.values(charEquipment).length - 1)
+          .map((item, index) => {
+            return (
+              <WS key={index} source={{ uri: item?.link?.assets?.[0].value }} />
+            );
           })}
       </WeaponAndShield>
       <Image
@@ -124,22 +147,11 @@ export const MainCharRender = () => {
   );
 };
 
-const equipmentParser = (equipment: EquippedItem[]) => {
-  let curr = CustomEquipmentSlotOrder.HEAD;
-  let newList = [];
-  for (let i = 0; i < equipment.length; i++) {
-    if (!equipment[i].slot.type) {
-      equipment[i].slot.type = curr;
-    }
-  }
-  console.log(curr);
-};
-
 const Item = styled(Image)`
   width: 80%;
   align-self: center;
   height: 10%;
-  border: 3px solid #73ad21;
+  border: 3px #73ad21;
   margin: 6px;
 `;
 
