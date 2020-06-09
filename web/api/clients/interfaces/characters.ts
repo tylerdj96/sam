@@ -51,7 +51,7 @@ export interface Key3 {
   href: string;
 }
 
-export interface PlayableRace {
+export interface Race {
   key: Key3;
   name: string;
   id: number;
@@ -67,22 +67,25 @@ export interface Faction {
   name: string;
 }
 
-export interface Character {
-  character: Character2;
-  protected_character: ProtectedCharacter;
+export interface BaseCharacterSummary {
   name: string;
   id: number;
   realm: Realm;
   playable_class: PlayableClass;
-  playable_race: PlayableRace;
+  playable_race: Race;
   gender: Gender;
   faction: Faction;
   level: number;
 }
 
+export interface CharacterSummary extends BaseCharacterSummary {
+  character: Character2;
+  protected_character: ProtectedCharacter;
+}
+
 export interface WowAccount {
   id: number;
-  characters: Character[];
+  characters: CharacterSummary[];
 }
 
 export interface Collections {
@@ -119,16 +122,9 @@ export interface Realm {
   slug: string;
 }
 
-export interface Character {
-  key: Key;
-  name: string;
-  id: number;
-  realm: Realm;
-}
-
 export interface CharacterRender {
   _links: Links;
-  character: Character;
+  character: CharacterSummary;
   avatar_url: string;
   bust_url: string;
   render_url: string;
@@ -157,18 +153,11 @@ export interface Realm {
   slug: string;
 }
 
-export interface Character {
-  key: Key;
-  name: string;
-  id: number;
-  realm: Realm;
-}
-
 export interface Key3 {
   href: string;
 }
 
-export interface PlayableRace {
+export interface Race {
   key: Key3;
   name: string;
   id: number;
@@ -372,7 +361,7 @@ export const customEquipmentSlotOrder: EquipmentDictionary = {
   TRINKET_1: { order: 14, item: undefined, link: undefined },
   TRINKET_2: { order: 15, item: undefined, link: undefined },
   MAIN_HAND: { order: 16, item: undefined, link: undefined },
-  OFF_HAND: { order: 17, item: undefined, link: undefined },
+  OFF_HAND: { order: 17, item: undefined, link: undefined }
 };
 
 export interface Slot {
@@ -391,8 +380,8 @@ export interface Item {
 
 export interface CharacterAppearance {
   _links: Links;
-  character: Character;
-  playable_race: PlayableRace;
+  character: CharacterSummary;
+  playable_race: Race;
   playable_class: PlayableClass;
   active_spec: ActiveSpec;
   gender: Gender;
@@ -423,13 +412,6 @@ export interface Realm {
   name: string;
   id: number;
   slug: string;
-}
-
-export interface Character {
-  key: Key;
-  name: string;
-  id: number;
-  realm: Realm;
 }
 
 export interface Key3 {
@@ -835,6 +817,199 @@ export interface EquippedItem {
 
 export interface CharacterEquipment {
   _links: Links;
-  character: Character;
+  character: CharacterSummary;
   equipped_items: EquippedItem[];
+}
+
+export interface Self {
+  href: string;
+}
+
+export interface Links {
+  self: Self;
+}
+
+export interface Gender {
+  type: string;
+  name: string;
+}
+
+export interface Faction {
+  type: string;
+  name: string;
+}
+
+export interface Key {
+  href: string;
+}
+
+export interface Race {
+  key: Key;
+  name: string;
+  id: number;
+}
+
+export interface Key2 {
+  href: string;
+}
+
+export interface PlayableClass {
+  key: Key2;
+  name: string;
+  id: number;
+}
+
+export interface Key3 {
+  href: string;
+}
+
+export interface ActiveSpec {
+  key: Key3;
+  name: string;
+  id: number;
+}
+
+export interface Key4 {
+  href: string;
+}
+
+export interface Realm {
+  key: Key4;
+  name: string;
+  id: number;
+  slug: string;
+}
+
+export interface Key5 {
+  href: string;
+}
+
+export interface Key6 {
+  href: string;
+}
+
+export interface Realm2 {
+  key: Key6;
+  name: string;
+  id: number;
+  slug: string;
+}
+
+export interface Faction2 {
+  type: string;
+  name: string;
+}
+
+export interface Guild {
+  key: Key5;
+  name: string;
+  id: number;
+  realm: Realm2;
+  faction: Faction2;
+}
+
+export interface Achievements {
+  href: string;
+}
+
+export interface Titles {
+  href: string;
+}
+
+export interface PvpSummary {
+  href: string;
+}
+
+export interface Encounters {
+  href: string;
+}
+
+export interface Media {
+  href: string;
+}
+
+export interface Specializations {
+  href: string;
+}
+
+export interface Statistics {
+  href: string;
+}
+
+export interface MythicKeystoneProfile {
+  href: string;
+}
+
+export interface Equipment {
+  href: string;
+}
+
+export interface Appearance {
+  href: string;
+}
+
+export interface Collections {
+  href: string;
+}
+
+export interface Key7 {
+  href: string;
+}
+
+export interface ActiveTitle {
+  key: Key7;
+  name: string;
+  id: number;
+  display_string: string;
+}
+
+export interface Reputations {
+  href: string;
+}
+
+export interface Quests {
+  href: string;
+}
+
+export interface AchievementsStatistics {
+  href: string;
+}
+
+export interface Professions {
+  href: string;
+}
+
+export interface Character {
+  _links: Links;
+  id: number;
+  name: string;
+  gender: Gender;
+  faction: Faction;
+  race: Race;
+  playable_class: PlayableClass;
+  active_spec: ActiveSpec;
+  realm: Realm;
+  guild: Guild;
+  level: number;
+  experience: number;
+  achievement_points: number;
+  achievements: Achievements;
+  titles: Titles;
+  pvp_summary: PvpSummary;
+  encounters: Encounters;
+  media: Media;
+  last_login_timestamp: number;
+  average_item_level: number;
+  equipped_item_level: number;
+  specializations: Specializations;
+  statistics: Statistics;
+  mythic_keystone_profile: MythicKeystoneProfile;
+  equipment: Equipment;
+  appearance: Appearance;
+  collections: Collections;
+  active_title: ActiveTitle;
+  reputations: Reputations;
+  quests: Quests;
+  achievements_statistics: AchievementsStatistics;
+  professions: Professions;
 }

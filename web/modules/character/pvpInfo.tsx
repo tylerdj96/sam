@@ -1,16 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
-import { View, Image, Text, ActivityIndicator, Picker } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { View, Image, Text } from "react-native";
 import { useBlizzContext } from "../../context/useBlizzToken";
-import { CharacterOption } from "../characterList";
 import {
-  getCharacterList,
   getPvpBracketStats,
-  ArenaBrackets,
+  ArenaBrackets
 } from "../../api/clients/profile-client";
-import { Character } from "../../api/clients/interfaces/characters";
 import { PvpBracketStatistics } from "../../api/clients/interfaces/pvp";
 import { CharacterContext } from "./characterProvider";
+import { FullScreenLoading } from "../../common/components/loaders";
 
 export const PvpInfo = () => {
   const { accessToken, loading } = useBlizzContext();
@@ -45,11 +42,7 @@ export const PvpInfo = () => {
   }, [accessToken]);
 
   if (loading || isLoading || !twos || !threes) {
-    return (
-      <View>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
+    return <FullScreenLoading />;
   }
 
   return (

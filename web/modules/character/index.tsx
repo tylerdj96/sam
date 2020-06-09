@@ -1,17 +1,13 @@
 import "react-native-gesture-handler";
-import React, { useContext, createContext } from "react";
+import React from "react";
 import { useRoute } from "@react-navigation/native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { CharacterOption } from "../characterList";
 import { MainCharRender } from "./mainCharRender";
-import { buildFallbackUri } from "../../api/clients/profile-client";
-import { View, ActivityIndicator } from "react-native";
 import { PvpInfo } from "./pvpInfo";
-import {
-  CharacterRender,
-  Character,
-} from "../../api/clients/interfaces/characters";
 import { CharacterProvider } from "./characterProvider";
+import { FullScreenLoading } from "../../common/components/loaders";
+import { FontAwesome } from "@expo/vector-icons";
 
 function isCharOpt(value: any): value is CharacterOption {
   return "char" in value && "render" in value && "fallback" in value;
@@ -26,29 +22,29 @@ export const CharNavigator = () => {
     : undefined;
 
   if (!option) {
-    return (
-      <View>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
+    return <FullScreenLoading />;
   }
   return (
     <CharacterProvider
       option={{
         char: option.char,
         render: option.render,
-        fallback: option.fallback,
+        fallback: option.fallback
       }}
     >
-      <Navigator drawerPosition="right" initialRouteName="Main">
+      <Navigator
+        drawerPosition="right"
+        initialRouteName="Main"
+        headerRight={() => (
+          <FontAwesome
+            name="search"
+            size={24}
+            color="black"
+            style={{ paddingRight: 24 }}
+          />
+        )}
+      >
         <Screen name="Main" component={MainCharRender} />
-        {/* {() => (
-            <MainCharRender
-              uri={option?.render?.render_url ?? buildFallbackUri(option.char)}
-            />
-          )}
-        </Screen> */}
-        {/* <Screen name="PvP">{() => <PvpInfo char={option.char} />}</Screen> */}
         <Screen name="PvP" component={PvpInfo} />
       </Navigator>
     </CharacterProvider>

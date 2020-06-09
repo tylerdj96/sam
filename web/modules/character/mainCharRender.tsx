@@ -1,39 +1,20 @@
 import React, { useEffect, useState, useContext } from "react";
-import { View, Image, Text, ActivityIndicator } from "react-native";
+import { View, Image } from "react-native";
 import styled from "styled-components";
 import { useBlizzContext } from "../../context/useBlizzToken";
 import {
   CharacterAppearance,
-  CharacterEquipment,
-  EquippedItem,
   customEquipmentSlotOrder,
   EquipmentDictionary,
+  Character
 } from "../../api/clients/interfaces/characters";
 import {
   getCharacterAppearance,
-  getPvpBracketStats,
-  ArenaBrackets,
-  buildFallbackUri,
-  getCharacterEquipment,
+  getCharacterEquipment
 } from "../../api/clients/profile-client";
 import { getItemMedia } from "../../api/clients/static-client";
-import { ItemMedia } from "../../api/clients/interfaces/items";
 import { CharacterContext } from "./characterProvider";
-import { Dictionary, cloneDeep } from "lodash";
-
-const equipmentSorter = (a: EquippedItem, b: EquippedItem) => {
-  if (
-    customEquipmentSlotOrder[a.slot.type].order <
-    customEquipmentSlotOrder[b.slot.type].order
-  )
-    return -1;
-  if (
-    customEquipmentSlotOrder[a.slot.type].order >
-    customEquipmentSlotOrder[b.slot.type].order
-  )
-    return 1;
-  return 0;
-};
+import { FullScreenLoading } from "../../common/components/loaders";
 
 export const MainCharRender = () => {
   const { accessToken, loading } = useBlizzContext();
@@ -66,13 +47,13 @@ export const MainCharRender = () => {
         // // since blizzard returns equipment out of order
         // // and only if the equipment piece exists
 
-        equipment?.equipped_items.forEach((item) => {
+        equipment?.equipped_items.forEach(item => {
           const key = item.slot.type;
           equipmentDict[key] = { ...equipmentDict[key], item };
         });
 
         //make an api call for each link
-        const promises = Object.values(equipmentDict).map((obj) => {
+        const promises = Object.values(equipmentDict).map(obj => {
           return getItemMedia(accessToken, obj.item?.media.id);
         });
         //await the promise for each item query
@@ -92,11 +73,7 @@ export const MainCharRender = () => {
   }, [accessToken]);
 
   if (loading || isLoading) {
-    return (
-      <View>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
+    return <FullScreenLoading />;
   }
 
   return (
@@ -139,9 +116,12 @@ export const MainCharRender = () => {
           width: "100%",
           position: "absolute",
           height: "100%",
-          zIndex: 0,
+          zIndex: 0
         }}
-        source={{ uri: render?.render_url ?? buildFallbackUri(char) }}
+        source={{
+          uri: render?.render_url
+          // buildFallbackUri(char.race.id, char.gender.type)
+        }}
       />
     </View>
   );
@@ -163,7 +143,7 @@ const ItemList = styled(View)<{ position: string }>`
   width: 20%;
   z-index: 1;
   top: 10%;
-  align-self: ${(props) =>
+  align-self: ${props =>
     props.position === "left" ? "flex-start" : "flex-end"};
 `;
 

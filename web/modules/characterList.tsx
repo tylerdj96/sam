@@ -1,21 +1,25 @@
-import React, { useEffect, useState, useMemo } from "react";
-import { View, Image, ActivityIndicator, ScrollView } from "react-native";
+import React, { useEffect, useState } from "react";
+import { ScrollView } from "react-native";
 import { ListItem } from "react-native-elements";
 import {
   getCharacterList,
   getCharacterRender,
   buildFallbackUri,
-  RenderTypes,
+  RenderTypes
 } from "../api/clients/profile-client";
 import { useBlizzContext } from "../context/useBlizzToken";
 import {
-  Character,
+  CharacterSummary,
   CharacterRender,
+  Character,
+  BaseCharacterSummary
 } from "../api/clients/interfaces/characters";
 import { useNavigation } from "@react-navigation/native";
+import { FullScreenLoading } from "../common/components/loaders";
+import { CharacterSearch } from "./character/characterSearch";
 
 export interface CharacterOption {
-  char: Character;
+  char: BaseCharacterSummary | Character;
   render: CharacterRender | undefined;
   fallback: string;
 }
@@ -32,11 +36,12 @@ const sortChars = (a: CharacterOption, b: CharacterOption) => {
   }
 };
 
-export const CharacterList = () => {
+export const CharacterList = ({ showSearch }: { showSearch: boolean }) => {
   const navigator = useNavigation();
   const { accessToken, loading } = useBlizzContext();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [charList, setCharList] = useState<CharacterOption[]>();
+  const [searchValue, setSearchValue] = useState<string>();
 
   useEffect(() => {
     const loadRawCharacters = async () => {
@@ -46,7 +51,7 @@ export const CharacterList = () => {
       }
       return;
     };
-    const loadAvatar = async (rawChar: Character) => {
+    const loadAvatar = async (rawChar: CharacterSummary) => {
       const render = await getCharacterRender(
         accessToken!,
         rawChar.realm.slug,
@@ -60,11 +65,15 @@ export const CharacterList = () => {
       setIsLoading(true);
       const rawChars = await loadRawCharacters();
       if (accessToken && rawChars) {
-        const promises = rawChars.map(async (c) => {
+        const promises = rawChars.map(async char => {
           return {
-            char: c,
-            render: await loadAvatar({ ...c }),
-            fallback: buildFallbackUri(c, RenderTypes.Avatar),
+            char,
+            render: await loadAvatar({ ...char }),
+            fallback: buildFallbackUri(
+              char.playable_race.id,
+              char.gender.type,
+              RenderTypes.Avatar
+            )
           };
         });
         const options = await Promise.all(promises);
@@ -77,35 +86,34 @@ export const CharacterList = () => {
   }, [accessToken]);
 
   if (loading || isLoading || !charList) {
-    return (
-      <View>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
+    return <FullScreenLoading />;
   }
 
   return (
-    <ScrollView>
-      {charList.map((opt) => (
-        <ListItem
-          key={`${opt.char.name}${opt.char.realm.name}`}
-          title={`${opt.char.name}`}
-          titleStyle={{ fontWeight: "bold" }}
-          subtitle={`Level ${opt.char.level} ${opt.char.playable_race.name} ${opt.char.playable_class.name}`}
-          leftAvatar={{
-            // rounded: true,
-            source: { uri: opt.render?.avatar_url ?? opt.fallback },
-          }}
-          // onPress={() => navigator.navigate("Main", { opt })}
-          onPress={() => navigator.navigate("Character", { opt })}
-          chevron
-          bottomDivider
-          // style={{
-          //   backgroundColor:
-          //     opt.char.faction.type === "HORDE" ? "#8C1616" : "#162c57",
-          // }}
+    <>
+      {showSearch && (
+        <CharacterSearch
+          searchValue={searchValue}
+          setSearchValue={setSearchValue}
         />
-      ))}
-    </ScrollView>
+      )}
+      <ScrollView>
+        {charList.map(opt => (
+          <ListItem
+            key={`${opt.char.name}${opt.char.realm.name}`}
+            title={`${opt.char.name}`}
+            titleStyle={{ fontWeight: "bold" }}
+            //fix-me
+            subtitle={`Level ${opt.char.level} ${opt.char.playable_class.name}`}
+            leftAvatar={{
+              source: { uri: opt.render?.avatar_url ?? opt.fallback }
+            }}
+            onPress={() => navigator.navigate("Character", { opt })}
+            chevron
+            bottomDivider
+          />
+        ))}
+      </ScrollView>
+    </>
   );
 };

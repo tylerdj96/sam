@@ -1,27 +1,23 @@
 import "react-native-gesture-handler";
-import React, { useContext, createContext, FC } from "react";
-import { useRoute, useLinkProps } from "@react-navigation/native";
-import { createDrawerNavigator } from "@react-navigation/drawer";
+import React, { createContext, FC } from "react";
 import { CharacterOption } from "../characterList";
-import { MainCharRender } from "./mainCharRender";
-import { buildFallbackUri } from "../../api/clients/profile-client";
-import { View, ActivityIndicator } from "react-native";
-import { PvpInfo } from "./pvpInfo";
 import {
   CharacterRender,
-  Character,
+  CharacterSummary,
+  BaseCharacterSummary,
+  Character
 } from "../../api/clients/interfaces/characters";
 
 export const CharacterProvider: FC<{ option: CharacterOption }> = ({
   option,
-  children,
+  children
 }) => {
   return (
     <CharacterContext.Provider
       value={{
         char: option.char,
         render: option.render,
-        fallback: option.fallback,
+        fallback: option.fallback
       }}
     >
       {children}
@@ -30,7 +26,7 @@ export const CharacterProvider: FC<{ option: CharacterOption }> = ({
 };
 
 export const CharacterContext = createContext({
-  char: {} as Character,
+  char: {} as BaseCharacterSummary | Character,
   render: {} as CharacterRender | undefined,
-  fallback: "",
+  fallback: ""
 });
