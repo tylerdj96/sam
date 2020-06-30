@@ -4,7 +4,7 @@ import {
   CharacterRender,
   CharacterAppearance,
   CharacterEquipment,
-  Character
+  Character,
 } from "./interfaces/characters";
 import { PvpBracketStatistics } from "./interfaces/pvp";
 
@@ -15,7 +15,7 @@ const LOCALE = "en_US";
 const basicParams = {
   namespace: PROFILE_NAMESPACE,
   // REGION,
-  locale: LOCALE
+  locale: LOCALE,
 };
 
 export const getCharacterList = async (
@@ -27,8 +27,8 @@ export const getCharacterList = async (
       {
         params: {
           ...basicParams,
-          access_token: accessToken
-        }
+          access_token: accessToken,
+        },
       }
     );
     return characters.data;
@@ -39,7 +39,7 @@ export const getCharacterList = async (
 
 export const getCharacter = async (
   accessToken: string,
-  realmSlug: string = "tichondrius",
+  realmSlug: string,
   characterName: string
 ): Promise<Character | undefined> => {
   try {
@@ -48,20 +48,21 @@ export const getCharacter = async (
       {
         params: {
           ...basicParams,
-          access_token: accessToken
-        }
+          access_token: accessToken,
+        },
       }
     );
     return characters.data;
   } catch (error) {
-    // console.error(error);
+    console.log("failed");
+    console.error(error);
   }
 };
 
 export enum RenderTypes {
   Avatar = "avatar",
   Bust = "inset",
-  Main = "main"
+  Main = "main",
 }
 
 export const buildFallbackUri = (
@@ -85,8 +86,8 @@ export const getCharacterRender = async (
       {
         params: {
           ...basicParams,
-          access_token: accessToken
-        }
+          access_token: accessToken,
+        },
       }
     );
     return render.data;
@@ -98,7 +99,7 @@ export const getCharacterRender = async (
 
 export enum ArenaBrackets {
   twos = "2v2",
-  threes = "3v3"
+  threes = "3v3",
 }
 
 export const getPvpBracketStats = async (
@@ -113,8 +114,8 @@ export const getPvpBracketStats = async (
       {
         params: {
           ...basicParams,
-          access_token: accessToken
-        }
+          access_token: accessToken,
+        },
       }
     );
     return render.data;
@@ -135,8 +136,8 @@ export const getCharacterAppearance = async (
       {
         params: {
           ...basicParams,
-          access_token: accessToken
-        }
+          access_token: accessToken,
+        },
       }
     );
     return appearance.data;
@@ -157,8 +158,8 @@ export const getCharacterEquipment = async (
       {
         params: {
           ...basicParams,
-          access_token: accessToken
-        }
+          access_token: accessToken,
+        },
       }
     );
     return equipment.data;

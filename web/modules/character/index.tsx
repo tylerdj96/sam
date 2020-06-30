@@ -29,20 +29,13 @@ export const CharNavigator = () => {
       option={{
         char: option.char,
         render: option.render,
-        fallback: option.fallback
+        fallback: option.fallback,
       }}
     >
       <Navigator
         drawerPosition="right"
         initialRouteName="Main"
-        headerRight={() => (
-          <FontAwesome
-            name="search"
-            size={24}
-            color="black"
-            style={{ paddingRight: 24 }}
-          />
-        )}
+        minSwipeDistance={0.5}
       >
         <Screen name="Main" component={MainCharRender} />
         <Screen name="PvP" component={PvpInfo} />

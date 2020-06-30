@@ -12,6 +12,8 @@
     ],
     "assetBundlePatterns": [
       "**/*"
-    ]
+    ],
+    "description": "simple armory mobile written in latest react",
+    "githubUrl": "https://github.com/tylerdj96/sam"
   }
 }

@@ -25,10 +25,15 @@ export default function App() {
                   style={{ paddingRight: 24 }}
                   onPress={() => setShowSearch(!showSearch)}
                 />
-              )
+              ),
             }}
           >
-            {() => <CharacterList showSearch={showSearch} />}
+            {() => (
+              <CharacterList
+                showSearch={showSearch}
+                setShowSearch={setShowSearch}
+              />
+            )}
           </Screen>
           <Screen name="Character" component={CharNavigator} />
         </Navigator>

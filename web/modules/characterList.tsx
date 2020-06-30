@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { ScrollView } from "react-native";
-import { ListItem } from "react-native-elements";
+import { ScrollView, View } from "react-native";
+import { ListItem, Overlay } from "react-native-elements";
 import {
   getCharacterList,
   getCharacterRender,
@@ -17,6 +17,8 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { FullScreenLoading } from "../common/components/loaders";
 import { CharacterSearch } from "./character/characterSearch";
+import { getRealms } from "../api/clients/dynamic-client";
+import { Realm } from "../api/clients/interfaces/realms";
 
 export interface CharacterOption {
   char: BaseCharacterSummary | Character;
@@ -24,24 +26,13 @@ export interface CharacterOption {
   fallback: string;
 }
 
-//fix-me
-//this is backwards
-const sortChars = (a: CharacterOption, b: CharacterOption) => {
-  if (a.char.level < b.char.level) return 1;
-  if (a.char.level > b.char.level) return -1;
-  else {
-    if (a.char.name < b.char.name) return -1;
-    if (a.char.name > b.char.name) return 1;
-    else return 0;
-  }
-};
-
-export const CharacterList = ({ showSearch }: { showSearch: boolean }) => {
+export const CharacterList = ({ showSearch, setShowSearch }: { showSearch: boolean, setShowSearch: (val: boolean) => void }) => {
   const navigator = useNavigation();
   const { accessToken, loading } = useBlizzContext();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [charList, setCharList] = useState<CharacterOption[]>();
   const [searchValue, setSearchValue] = useState<string>();
+  const [realms, setRealms] = useState<Realm[]>();
 
   useEffect(() => {
     const loadRawCharacters = async () => {
@@ -82,7 +73,26 @@ export const CharacterList = ({ showSearch }: { showSearch: boolean }) => {
       setIsLoading(false);
     };
 
+    const loadRealms = async () => {
+      if (accessToken) {
+        setIsLoading(true);
+        const rawRealms = await getRealms(accessToken);
+        if (rawRealms)
+          setRealms(
+            rawRealms.realms
+              .sort(compareRealms)
+          );
+        setIsLoading(false);
+      }
+    };
+
+
+    loadRealms();
     loadAvatars();
+  }, [accessToken]);
+
+  useEffect(() => {
+
   }, [accessToken]);
 
   if (loading || isLoading || !charList) {
@@ -90,13 +100,15 @@ export const CharacterList = ({ showSearch }: { showSearch: boolean }) => {
   }
 
   return (
-    <>
-      {showSearch && (
-        <CharacterSearch
-          searchValue={searchValue}
-          setSearchValue={setSearchValue}
-        />
-      )}
+    <View>
+      <CharacterSearch
+        searchValue={searchValue}
+        setSearchValue={setSearchValue}
+        showSearch={showSearch}
+        setShowSearch={setShowSearch}
+        realms={realms}
+      />
+
       <ScrollView>
         {charList.map(opt => (
           <ListItem
@@ -114,6 +126,24 @@ export const CharacterList = ({ showSearch }: { showSearch: boolean }) => {
           />
         ))}
       </ScrollView>
-    </>
+    </View>
   );
 };
+
+
+//fix-me
+//this is backwards
+const sortChars = (a: CharacterOption, b: CharacterOption) => {
+  if (a.char.level < b.char.level) return 1;
+  if (a.char.level > b.char.level) return -1;
+  else {
+    if (a.char.name < b.char.name) return -1;
+    if (a.char.name > b.char.name) return 1;
+    else return 0;
+  }
+};
+
+const compareRealms = (a: Realm, b: Realm) => {
+  return a.slug < b.slug ? -1 : a.slug > b.slug ? 1 : 0;
+};
+
